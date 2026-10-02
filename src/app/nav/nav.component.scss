@@ -1,0 +1,178 @@
+$bg-nav:     rgba(11, 17, 32, 0.9);
+$teal:       #00c9b1;
+$text:       #e2eaf4;
+$text-muted: #6b87a8;
+$border:     rgba(255, 255, 255, 0.06);
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 60px;
+  background: $bg-nav;
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid $border;
+
+  &__brand-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: $text;
+  }
+
+  &__chevron {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid $border;
+    background: transparent;
+    color: $text-muted;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s, transform 0.2s;
+    flex-shrink: 0;
+
+    &:hover {
+      color: $text;
+      border-color: rgba(0, 201, 177, 0.4);
+    }
+
+    &--open {
+      transform: rotate(180deg);
+      color: $teal;
+      border-color: rgba(0, 201, 177, 0.4);
+    }
+
+    svg { display: block; }
+  }
+
+  &__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 99;
+  }
+
+  &__dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    min-width: 220px;
+    background: #0f1929;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    z-index: 200;
+  }
+
+  &__dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 11px 16px;
+    background: transparent;
+    border: none;
+    color: $text-muted;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    gap: 12px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: $text;
+    }
+
+    &--active {
+      color: $teal;
+      background: rgba(0, 201, 177, 0.08);
+    }
+
+    & + & {
+      border-top: 1px solid $border;
+    }
+  }
+
+  &__dropdown-season {
+    font-size: 11px;
+    color: $text-muted;
+    opacity: 0.6;
+    flex-shrink: 0;
+  }
+
+  &__logo {
+    font-size: 22px;
+  }
+
+  &__name {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  &__links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+
+  &__link {
+    font-size: 14px;
+    font-weight: 500;
+    color: $text-muted;
+    text-decoration: none;
+    transition: color 0.2s;
+    cursor: pointer;
+
+    &:hover {
+      color: $text;
+    }
+
+    &--active {
+      color: $text;
+    }
+
+    &--cta {
+      padding: 7px 16px;
+      border-radius: 8px;
+      background: rgba(0, 201, 177, 0.15);
+      color: $teal;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.03em;
+      border: 1px solid rgba(0, 201, 177, 0.3);
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .nav {
+    padding: 0 16px;
+
+    &__links {
+      gap: 14px;
+    }
+
+    // Hide text links on mobile, keep only the week badge
+    &__link:not(&__link--cta) {
+      display: none;
+    }
+  }
+}

@@ -1,0 +1,219 @@
+<div class="trades-page">
+
+  <div class="page-header">
+    <h1 class="page-title">Trade History</h1>
+    <p class="page-sub">All completed trades</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+
+    <!-- Year dropdown -->
+    <div class="filter-dd">
+      <button class="filter-btn" (click)="yearPickerOpen.set(!yearPickerOpen())">
+        <span>{{ selectedYearLabel() }}</span>
+        <svg class="filter-chevron" [class.filter-chevron--open]="yearPickerOpen()"
+             width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+          <path d="M6 8.5L1.5 4h9L6 8.5z"/>
+        </svg>
+      </button>
+      @if (yearPickerOpen()) {
+        <div class="filter-backdrop" (click)="yearPickerOpen.set(false)"></div>
+        <div class="filter-menu">
+          <button class="filter-item" [class.filter-item--active]="selectedLeagueId() === ''"
+                  (click)="selectYear('')">All Seasons</button>
+          @for (opt of seasons(); track opt.leagueId) {
+            <button class="filter-item"
+                    [class.filter-item--active]="selectedLeagueId() === opt.leagueId"
+                    (click)="selectYear(opt.leagueId)">
+              {{ opt.season }}
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Manager dropdown -->
+    @if (managerOptions().length > 0) {
+      <div class="filter-dd">
+        <button class="filter-btn" (click)="managerPickerOpen.set(!managerPickerOpen())">
+          <span>{{ selectedManagerLabel() }}</span>
+          <svg class="filter-chevron" [class.filter-chevron--open]="managerPickerOpen()"
+               width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+            <path d="M6 8.5L1.5 4h9L6 8.5z"/>
+          </svg>
+        </button>
+        @if (managerPickerOpen()) {
+          <div class="filter-backdrop" (click)="managerPickerOpen.set(false)"></div>
+          <div class="filter-menu filter-menu--scrollable">
+            <button class="filter-item" [class.filter-item--active]="managerFilter() === ''"
+                    (click)="selectManager('')">All Managers</button>
+            @for (name of managerOptions(); track name) {
+              <button class="filter-item"
+                      [class.filter-item--active]="managerFilter() === name"
+                      (click)="selectManager(name)">
+                {{ name }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Player dropdown -->
+    @if (playerOptions().length > 0) {
+      <div class="filter-dd">
+        <button class="filter-btn" (click)="playerPickerOpen.set(!playerPickerOpen())">
+          <span>{{ selectedPlayerLabel() }}</span>
+          <svg class="filter-chevron" [class.filter-chevron--open]="playerPickerOpen()"
+               width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+            <path d="M6 8.5L1.5 4h9L6 8.5z"/>
+          </svg>
+        </button>
+        @if (playerPickerOpen()) {
+          <div class="filter-backdrop" (click)="playerPickerOpen.set(false)"></div>
+          <div class="filter-menu filter-menu--scrollable">
+            <button class="filter-item" [class.filter-item--active]="playerFilter() === ''"
+                    (click)="selectPlayer('')">All Players</button>
+            @for (opt of playerOptions(); track opt.id) {
+              <button class="filter-item"
+                      [class.filter-item--active]="playerFilter() === opt.id"
+                      (click)="selectPlayer(opt.id)">
+                {{ opt.name }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading trade history...</p>
+    </div>
+  } @else if (errorMsg()) {
+    <div class="empty-state">
+      <p class="error-title">Failed to load</p>
+      <p>{{ errorMsg() }}</p>
+    </div>
+  } @else if (filteredTrades().length === 0) {
+    <div class="empty-state">
+      <p>No trades found for the current filters.</p>
+    </div>
+  } @else {
+
+    <!-- Most Lopsided Trades -->
+    @if (lopsidedTrades().length > 0) {
+      <div class="heist-section">
+        <h2 class="heist-heading">Most Lopsided Trades</h2>
+        <p class="heist-sub">Ranked by difference in season points scored by traded players</p>
+        <div class="heist-list">
+          @for (trade of lopsidedTrades(); track trade.transaction_id; let rank = $index) {
+            <div class="heist-card">
+              <div class="heist-rank">#{{ rank + 1 }}</div>
+              <div class="heist-date">{{ trade.created | date:'MMM d, y' }}</div>
+              <div class="heist-matchup">
+                @for (side of trade.sides; track side.rosterId; let i = $index) {
+                  <div class="heist-side" [class.heist-side--winner]="tradeWinnerIdx(trade) === i"
+                       [class.heist-side--loser]="tradeWinnerIdx(trade) !== -1 && tradeWinnerIdx(trade) !== i">
+                    <span class="heist-team">{{ teamName(side.rosterId, trade.leagueId) }}</span>
+                    <span class="heist-pts">{{ sidePointValue(side, trade.leagueId) | number:'1.0-0' }} pts</span>
+                    @if (tradeWinnerIdx(trade) === i) {
+                      <span class="heist-badge">WIN</span>
+                    }
+                  </div>
+                  @if (!$last) {
+                    <span class="heist-vs">vs</span>
+                  }
+                }
+              </div>
+              <div class="heist-delta">
+                +{{ tradeLopsidedness(trade) | number:'1.0-0' }} pt gap
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Trade feed -->
+    <div class="trade-feed">
+      @for (trade of filteredTrades(); track trade.transaction_id) {
+        <div class="trade-card">
+
+          <div class="trade-date">{{ trade.created | date:'MMM d, y' }}</div>
+
+          <div class="trade-sides">
+            @for (side of trade.sides; track side.rosterId; let i = $index; let isLast = $last) {
+              <div class="trade-side">
+                <div class="trade-team">
+                  <img class="avatar"
+                       [src]="avatarUrl(side.rosterId, trade.leagueId)"
+                       [alt]="teamName(side.rosterId, trade.leagueId)"
+                       (error)="$any($event.target).style.display='none'" />
+                  <span class="team-label">{{ teamName(side.rosterId, trade.leagueId) }}</span>
+                </div>
+
+                <div class="trade-receives">
+                  <span class="receives-label">Receives</span>
+                  <div class="asset-list">
+                    @for (pid of side.playersReceived; track pid) {
+                      <span class="asset-tag">
+                        <span class="pos-badge" [class]="posClass(playerPos(pid))">
+                          {{ playerPos(pid) || '?' }}
+                        </span>
+                        {{ playerName(pid) }}
+                      </span>
+                    }
+                    @for (pick of side.picksReceived; track pick.round) {
+                      <span class="asset-tag asset-tag--pick">
+                        📋 {{ pickLabel(pick) }}
+                      </span>
+                    }
+                    @if (!hasAssets(side)) {
+                      <span class="no-assets">Nothing</span>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              @if (!isLast) {
+                <div class="trade-swap-icon">⇄</div>
+              }
+            }
+          </div>
+
+          <!-- Value bar (only when we have player point data) -->
+          @if (tradeTotalValue(trade) > 0) {
+            <div class="trade-value">
+              <div class="trade-value-label">Season pts (players received)</div>
+              <div class="trade-value-rows">
+                @for (side of trade.sides; track side.rosterId; let i = $index) {
+                  <div class="trade-value-row"
+                       [class.trade-value-row--winner]="tradeWinnerIdx(trade) === i"
+                       [class.trade-value-row--loser]="tradeWinnerIdx(trade) !== -1 && tradeWinnerIdx(trade) !== i">
+                    <span class="trade-value-name">{{ teamName(side.rosterId, trade.leagueId) }}</span>
+                    <div class="trade-value-track">
+                      <div class="trade-value-fill"
+                           [style.width.%]="sideValuePct(side, trade)">
+                      </div>
+                    </div>
+                    <span class="trade-value-pts">
+                      {{ sidePointValue(side, trade.leagueId) | number:'1.0-0' }}
+                    </span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+        </div>
+      }
+    </div>
+
+  }
+
+</div>

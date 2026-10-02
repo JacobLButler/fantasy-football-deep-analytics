@@ -1,0 +1,300 @@
+$bg:         #0b1120;
+$bg-card:    #111b2e;
+$teal:       #00c9b1;
+$purple:     #a78bfa;
+$blue:       #4f9eff;
+$amber:      #f59e0b;
+$red:        #f87171;
+$green:      #34d399;
+$text:       #e2eaf4;
+$text-muted: #6b87a8;
+$border:     rgba(255, 255, 255, 0.06);
+$radius:     14px;
+
+.analytics-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+.page-header {
+  margin-bottom: 32px;
+}
+
+.page-title {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 800;
+  color: $text;
+  margin: 0 0 6px;
+}
+
+.page-sub {
+  font-size: 14px;
+  color: $text-muted;
+  margin: 0;
+}
+
+// ── Loading / empty ───────────────────────────────────────────────────────────
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 80px 0;
+  color: $text-muted;
+  font-size: 14px;
+  text-align: center;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid $border;
+  border-top-color: $teal;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid $border;
+  padding-bottom: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border: none;
+  background: transparent;
+  color: $text-muted;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+
+  &:hover {
+    color: $text;
+  }
+
+  &--active {
+    color: $teal;
+    border-bottom-color: $teal;
+    font-weight: 600;
+  }
+
+  &__icon {
+    font-size: 16px;
+  }
+}
+
+// ── Section description ───────────────────────────────────────────────────────
+.section-desc {
+  font-size: 13px;
+  color: $text-muted;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid $border;
+  border-radius: 10px;
+}
+
+// ── Ranking list ──────────────────────────────────────────────────────────────
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ranking-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: 12px;
+  transition: border-color 0.15s, transform 0.15s;
+
+  &:hover {
+    border-color: rgba(0, 201, 177, 0.2);
+    transform: translateX(2px);
+  }
+}
+
+.rank-num {
+  font-size: 13px;
+  font-weight: 700;
+  color: $text-muted;
+  min-width: 20px;
+  text-align: center;
+
+  &--top { color: $amber; }
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+.r-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: $text;
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.r-stat {
+  font-size: 13px;
+  color: $text;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &.muted { color: $text-muted; }
+}
+
+// ── Power ranking bar ─────────────────────────────────────────────────────────
+.bar-wrap {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 60px;
+}
+
+.bar {
+  height: 100%;
+  background: linear-gradient(90deg, $teal, $blue);
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+.trend {
+  font-size: 13px;
+  font-weight: 600;
+  color: $text-muted;
+  white-space: nowrap;
+  min-width: 72px;
+  text-align: right;
+
+  &--up   { color: $green; }
+  &--down { color: $red; }
+}
+
+// ── Luck bar ──────────────────────────────────────────────────────────────────
+.luck-bar-wrap {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 60px;
+}
+
+.luck-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s ease;
+  background: $text-muted;
+
+  &--positive { background: $green; }
+  &--negative { background: $red; }
+}
+
+.luck-delta {
+  font-size: 14px;
+  font-weight: 700;
+  min-width: 40px;
+  text-align: right;
+
+  &--pos { color: $green; }
+  &--neg { color: $red; }
+}
+
+.luck-label {
+  font-size: 12px;
+  min-width: 90px;
+  text-align: right;
+}
+
+// ── Consistency meter ─────────────────────────────────────────────────────────
+.meter {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 60px;
+
+  &__fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s ease;
+
+    &--high { background: $teal; }
+    &--mid  { background: $amber; }
+    &--low  { background: $red; }
+  }
+}
+
+// ── Efficiency grade badge ────────────────────────────────────────────────────
+.grade-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 26px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+
+  &.grade--a { background: rgba(0, 201, 177, 0.2);  color: $teal; }
+  &.grade--b { background: rgba(79, 158, 255, 0.2); color: $blue; }
+  &.grade--c { background: rgba(245, 158, 11, 0.2); color: $amber; }
+  &.grade--d { background: rgba(248, 113, 113, 0.2); color: $red; }
+}
+
+// ── Mobile ────────────────────────────────────────────────────────────────────
+@media (max-width: 640px) {
+  .analytics-page {
+    padding: 32px 16px 60px;
+  }
+
+  .r-name {
+    min-width: 90px;
+  }
+
+  .luck-label,
+  .trend {
+    display: none;
+  }
+
+  .ranking-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}

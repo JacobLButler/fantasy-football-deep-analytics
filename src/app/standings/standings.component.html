@@ -1,0 +1,77 @@
+<div class="standings-page">
+
+  <div class="page-header">
+    <h1 class="page-title">Standings</h1>
+    <p class="page-sub">{{ state.season }} Season &middot; Week {{ state.currentWeek }}</p>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading standings...</p>
+    </div>
+  } @else if (errorMsg()) {
+    <div class="error-state">
+      <p class="error-title">Failed to load</p>
+      <p class="error-detail">{{ errorMsg() }}</p>
+    </div>
+  } @else {
+    <div class="standings-wrap">
+
+      <!-- Table header -->
+      <div class="standings-row standings-row--header">
+        <span class="col col--rank">#</span>
+        <span class="col col--team">Team</span>
+        <span class="col col--stat">W</span>
+        <span class="col col--stat">L</span>
+        <span class="col col--stat">PF</span>
+        <span class="col col--stat">PA</span>
+        <span class="col col--stat">Win%</span>
+        <span class="col col--streak">Streak</span>
+      </div>
+
+      @for (team of standings(); track team.rosterId; let i = $index) {
+        <div class="standings-row"
+             [class.standings-row--playoff]="isPlayoffTeam(i)"
+             [class.standings-row--cutline]="isOnCutline(i)">
+
+          <span class="col col--rank">
+            <span class="rank-badge" [class]="rankClass(i)">{{ i + 1 }}</span>
+          </span>
+
+          <span class="col col--team">
+            <img class="avatar"
+                 [src]="avatarUrl(team.rosterId)"
+                 [alt]="teamName(team.rosterId)"
+                 (error)="$any($event.target).style.display='none'" />
+            <span class="team-info">
+              <span class="team-name">{{ teamName(team.rosterId) }}</span>
+              <span class="owner-name">{{ ownerName(team.rosterId) }}</span>
+            </span>
+          </span>
+
+          <span class="col col--stat stat--win">{{ team.wins }}</span>
+          <span class="col col--stat stat--loss">{{ team.losses }}</span>
+          <span class="col col--stat">{{ team.pointsFor | number:'1.1-1' }}</span>
+          <span class="col col--stat muted">{{ team.pointsAgainst | number:'1.1-1' }}</span>
+          <span class="col col--stat">{{ team.winPct | percent:'1.0-0' }}</span>
+
+          <span class="col col--streak">
+            @if (team.streak) {
+              <span class="streak-badge" [class]="streakClass(team.streak)">{{ team.streak }}</span>
+            } @else {
+              <span class="muted">—</span>
+            }
+          </span>
+
+        </div>
+      }
+
+      <div class="cutline-label">
+        <span>Playoff cutline &mdash; top {{ state.playoffTeams }} advance</span>
+      </div>
+
+    </div>
+  }
+
+</div>

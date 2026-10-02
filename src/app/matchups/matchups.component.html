@@ -1,0 +1,78 @@
+<div class="matchups-page">
+
+  <div class="page-header">
+    <h1 class="page-title">Matchups</h1>
+    <div class="week-nav">
+      <button class="week-btn" (click)="prevWeek()" [disabled]="week() <= 1">&#8249;</button>
+      <p class="page-sub">Week {{ week() }} &middot; {{ state.season }} Season</p>
+      <button class="week-btn" (click)="nextWeek()" [disabled]="week() >= state.currentWeek">&#8250;</button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading matchups...</p>
+    </div>
+  } @else if (errorMsg()) {
+    <div class="empty-state">
+      <p class="error-title">Failed to load</p>
+      <p>{{ errorMsg() }}</p>
+    </div>
+  } @else if (matchups().length === 0) {
+    <div class="empty-state">
+      <p>No matchup data available for Week {{ week() }} yet.</p>
+    </div>
+  } @else {
+    <div class="matchups-grid">
+      @for (pair of matchups(); track pair.matchupId) {
+        <div class="matchup-card">
+
+          <!-- Top team (winning / higher score) -->
+          <div class="matchup-side matchup-side--winner">
+            <div class="team-meta">
+              <img class="avatar"
+                   [src]="avatarUrl(pair.home.roster_id)"
+                   [alt]="teamName(pair.home.roster_id)"
+                   (error)="$any($event.target).style.display='none'" />
+              <span class="team-name">{{ teamName(pair.home.roster_id) }}</span>
+            </div>
+            <span class="score score--winner">{{ (pair.home.points ?? 0) | number:'1.2-2' }}</span>
+          </div>
+
+          <div class="matchup-divider">
+            <span class="vs-label">vs</span>
+            <div class="score-bar">
+              <div class="score-bar__fill"
+                   [style.width.%]="scorePct(pair.home.points, pair.away.points)">
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom team (losing / lower score) -->
+          <div class="matchup-side matchup-side--trailing">
+            <div class="team-meta">
+              <img class="avatar"
+                   [src]="avatarUrl(pair.away.roster_id)"
+                   [alt]="teamName(pair.away.roster_id)"
+                   (error)="$any($event.target).style.display='none'" />
+              <span class="team-name">{{ teamName(pair.away.roster_id) }}</span>
+            </div>
+            <span class="score score--trailing">{{ (pair.away.points ?? 0) | number:'1.2-2' }}</span>
+          </div>
+
+          <!-- Margin -->
+          @if ((pair.home.points ?? 0) > 0 || (pair.away.points ?? 0) > 0) {
+            <div class="matchup-footer">
+              <span class="margin">
+                {{ ((pair.home.points ?? 0) - (pair.away.points ?? 0)) | number:'1.2-2' }} pt margin
+              </span>
+            </div>
+          }
+
+        </div>
+      }
+    </div>
+  }
+
+</div>

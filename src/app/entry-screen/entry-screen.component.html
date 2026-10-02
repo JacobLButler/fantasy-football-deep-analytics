@@ -1,0 +1,19 @@
+<p>
+  entry-screen works!
+</p>
+<form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+  <label for="username">Name:</label>
+  <input id="username" formControlName="username" />
+
+  <label for="password">password:</label>
+  <input id="password" formControlName="password" />
+
+  <div formGroupName="secondaryInformation">
+    <label for="age">Age:</label>
+    <input id="age" formControlName="age" />
+
+    <label for="address">Address:</label>
+    <input id="address" formControlName="address" />
+  </div>
+  <button type="submit"  [disabled]="userForm.invalid">Submit</button>
+</form>

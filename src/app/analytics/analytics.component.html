@@ -1,0 +1,161 @@
+<div class="analytics-page">
+
+  <div class="page-header">
+    <h1 class="page-title">Analytics</h1>
+    <p class="page-sub">{{ state.season }} Season &middot; {{ state.weeksPlayed }} weeks of data</p>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Crunching the numbers...</p>
+    </div>
+  } @else if (errorMsg()) {
+    <div class="empty-state">
+      <p class="error-title">Failed to load</p>
+      <p>{{ errorMsg() }}</p>
+    </div>
+  } @else if (noData()) {
+    <div class="empty-state">
+      <p>No matchup data yet — check back after Week 1.</p>
+    </div>
+  } @else {
+
+    <!-- Tab bar -->
+    <div class="tabs" role="tablist">
+      @for (tab of tabs; track tab.id) {
+        <button class="tab"
+                [class.tab--active]="activeTab() === tab.id"
+                (click)="activeTab.set(tab.id)"
+                role="tab">
+          <span class="tab__icon">{{ tab.icon }}</span>
+          <span class="tab__label">{{ tab.label }}</span>
+        </button>
+      }
+    </div>
+
+    <!-- ── Power Rankings ── -->
+    @if (activeTab() === 'power') {
+      <div class="section-desc">
+        Ranked by season average points. Last-3-week trend shows current hot/cold streaks.
+      </div>
+      <div class="ranking-list">
+        @for (team of powerRankings(); track team.rosterId) {
+          <div class="ranking-row">
+            <span class="rank-num" [class.rank-num--top]="team.rank <= 3">{{ team.rank }}</span>
+            <img class="avatar"
+                 [src]="avatarUrl(team.rosterId)"
+                 [alt]="teamName(team.rosterId)"
+                 (error)="$any($event.target).style.display='none'" />
+            <span class="r-name">{{ teamName(team.rosterId) }}</span>
+            <div class="bar-wrap">
+              <div class="bar" [style.width.%]="(team.avgPointsFor / maxAvgPts()) * 100"></div>
+            </div>
+            <span class="r-stat">{{ team.avgPointsFor }} avg</span>
+            <span class="trend" [class]="trendClass(team)">
+              {{ trendIcon(team) }} {{ team.last3WeeksAvg }}
+            </span>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ── Schedule Luck ── -->
+    @if (activeTab() === 'luck') {
+      <div class="section-desc">
+        Expected wins = how many wins you'd have if you played every team every week.
+        A positive delta means your schedule favored you — you faced weaker opponents when you scored big.
+      </div>
+      <div class="ranking-list">
+        @for (team of scheduleLuck(); track team.rosterId) {
+          <div class="ranking-row">
+            <img class="avatar"
+                 [src]="avatarUrl(team.rosterId)"
+                 [alt]="teamName(team.rosterId)"
+                 (error)="$any($event.target).style.display='none'" />
+            <span class="r-name">{{ teamName(team.rosterId) }}</span>
+            <span class="r-stat muted">{{ team.actualWins }}W / {{ team.expectedWins }}W exp</span>
+            <div class="luck-bar-wrap">
+              <div class="luck-bar"
+                   [class.luck-bar--positive]="team.luckDelta > 0"
+                   [class.luck-bar--negative]="team.luckDelta < 0"
+                   [style.width.%]="luckBarWidth(team.luckDelta)">
+              </div>
+            </div>
+            <span class="luck-delta"
+                  [class.luck-delta--pos]="team.luckDelta > 0"
+                  [class.luck-delta--neg]="team.luckDelta < 0">
+              {{ team.luckDelta > 0 ? '+' : '' }}{{ team.luckDelta }}
+            </span>
+            <span class="luck-label muted">{{ luckLabel(team.luckDelta) }}</span>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ── Consistency ── -->
+    @if (activeTab() === 'consistency') {
+      <div class="section-desc">
+        Measured by coefficient of variation — a lower standard deviation relative to your average means you show up consistently each week.
+        Higher score = more reliable.
+      </div>
+      <div class="ranking-list">
+        @for (team of consistency(); track team.rosterId; let i = $index) {
+          <div class="ranking-row">
+            <span class="rank-num" [class.rank-num--top]="i < 3">{{ i + 1 }}</span>
+            <img class="avatar"
+                 [src]="avatarUrl(team.rosterId)"
+                 [alt]="teamName(team.rosterId)"
+                 (error)="$any($event.target).style.display='none'" />
+            <span class="r-name">{{ teamName(team.rosterId) }}</span>
+            <span class="r-stat muted">{{ team.avgPoints }} avg &plusmn;{{ team.stdDev }}</span>
+            <div class="meter">
+              <div class="meter__fill"
+                   [style.width.%]="team.consistencyScore * 100"
+                   [class.meter__fill--high]="team.consistencyScore >= 0.85"
+                   [class.meter__fill--mid]="team.consistencyScore >= 0.70 && team.consistencyScore < 0.85"
+                   [class.meter__fill--low]="team.consistencyScore < 0.70">
+              </div>
+            </div>
+            <span class="r-stat">{{ (team.consistencyScore * 100) | number:'1.0-0' }}%</span>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ── Lineup Efficiency ── -->
+    @if (activeTab() === 'efficiency') {
+      <div class="section-desc">
+        How close each manager gets to their optimal possible lineup each week.
+        Tracks total points left on the bench — every point counts.
+      </div>
+      <div class="ranking-list">
+        @for (team of lineupEfficiency(); track team.rosterId; let i = $index) {
+          <div class="ranking-row">
+            <span class="rank-num" [class.rank-num--top]="i < 3">{{ i + 1 }}</span>
+            <img class="avatar"
+                 [src]="avatarUrl(team.rosterId)"
+                 [alt]="teamName(team.rosterId)"
+                 (error)="$any($event.target).style.display='none'" />
+            <span class="r-name">{{ teamName(team.rosterId) }}</span>
+            <div class="meter">
+              <div class="meter__fill"
+                   [style.width.%]="team.avgEfficiency * 100"
+                   [class.meter__fill--high]="team.avgEfficiency >= 0.90"
+                   [class.meter__fill--mid]="team.avgEfficiency >= 0.80 && team.avgEfficiency < 0.90"
+                   [class.meter__fill--low]="team.avgEfficiency < 0.80">
+              </div>
+            </div>
+            <span class="r-stat">{{ (team.avgEfficiency * 100) | number:'1.0-0' }}%</span>
+            <span class="grade-badge" [class]="efficiencyGradeClass(team.avgEfficiency)">
+              {{ efficiencyGrade(team.avgEfficiency) }}
+            </span>
+            <span class="r-stat muted">{{ team.totalPointsLeft }} left on bench</span>
+          </div>
+        }
+      </div>
+    }
+
+  }
+
+</div>

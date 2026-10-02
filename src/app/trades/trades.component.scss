@@ -1,0 +1,496 @@
+$bg:         #0b1120;
+$bg-card:    #111b2e;
+$teal:       #00c9b1;
+$text:       #e2eaf4;
+$text-muted: #6b87a8;
+$border:     rgba(255, 255, 255, 0.06);
+$radius:     14px;
+
+.trades-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 800;
+  color: $text;
+  margin: 0 0 6px;
+}
+
+.page-sub {
+  font-size: 14px;
+  color: $text-muted;
+  margin: 0;
+}
+
+// ── Filters ────────────────────────────────────────────────────────────────────
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.filter-dd {
+  position: relative;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid $border;
+  border-radius: 10px;
+  color: $text;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: rgba(0, 201, 177, 0.4);
+    background: rgba(255, 255, 255, 0.07);
+  }
+}
+
+.filter-chevron {
+  color: $text-muted;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+
+  &--open {
+    transform: rotate(180deg);
+  }
+}
+
+.filter-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+}
+
+.filter-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 160px;
+  background: #0f1929;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  z-index: 200;
+
+  &--scrollable {
+    max-height: 280px;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar { width: 4px; }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 2px;
+    }
+  }
+}
+
+.filter-item {
+  display: block;
+  width: 100%;
+  padding: 9px 14px;
+  background: transparent;
+  border: none;
+  color: $text-muted;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: $text;
+  }
+
+  &--active {
+    color: $teal;
+    background: rgba(0, 201, 177, 0.08);
+  }
+
+  & + & {
+    border-top: 1px solid $border;
+  }
+}
+
+// ── Loading / empty ───────────────────────────────────────────────────────────
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 80px 0;
+  color: $text-muted;
+  font-size: 14px;
+  text-align: center;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid $border;
+  border-top-color: $teal;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ── Most Lopsided section ─────────────────────────────────────────────────────
+.heist-section {
+  margin-bottom: 36px;
+}
+
+.heist-heading {
+  font-size: 18px;
+  font-weight: 800;
+  color: $text;
+  margin: 0 0 4px;
+}
+
+.heist-sub {
+  font-size: 12px;
+  color: $text-muted;
+  margin: 0 0 16px;
+}
+
+.heist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.heist-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: $radius;
+  flex-wrap: wrap;
+}
+
+.heist-rank {
+  font-size: 13px;
+  font-weight: 800;
+  color: $teal;
+  min-width: 28px;
+  flex-shrink: 0;
+}
+
+.heist-date {
+  font-size: 12px;
+  color: $text-muted;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.heist-matchup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.heist-side {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &--winner .heist-team { color: $teal; }
+  &--loser  .heist-team { color: $text-muted; }
+}
+
+.heist-team {
+  font-size: 13px;
+  font-weight: 600;
+  color: $text;
+}
+
+.heist-pts {
+  font-size: 12px;
+  color: $text-muted;
+}
+
+.heist-badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(0, 201, 177, 0.15);
+  border: 1px solid rgba(0, 201, 177, 0.3);
+  color: $teal;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.heist-vs {
+  font-size: 11px;
+  color: $text-muted;
+  flex-shrink: 0;
+}
+
+.heist-delta {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 700;
+  color: $text-muted;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+// ── Trade value bar ───────────────────────────────────────────────────────────
+.trade-value {
+  padding: 12px 20px;
+  border-top: 1px solid $border;
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.trade-value-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $text-muted;
+  margin-bottom: 8px;
+}
+
+.trade-value-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.trade-value-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  &--winner .trade-value-fill {
+    background: linear-gradient(90deg, $teal, #4f9eff);
+  }
+
+  &--winner .trade-value-pts {
+    color: $teal;
+  }
+
+  &--loser .trade-value-fill {
+    background: rgba(107, 135, 168, 0.4);
+  }
+}
+
+.trade-value-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: $text-muted;
+  min-width: 100px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trade-value-track {
+  flex: 1;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.trade-value-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: rgba(107, 135, 168, 0.4);
+  transition: width 0.5s ease;
+}
+
+.trade-value-pts {
+  font-size: 12px;
+  font-weight: 700;
+  color: $text-muted;
+  min-width: 40px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+// ── Feed ──────────────────────────────────────────────────────────────────────
+.trade-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.trade-card {
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: $radius;
+  overflow: hidden;
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: rgba(0, 201, 177, 0.25);
+  }
+}
+
+.trade-date {
+  padding: 10px 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: $text-muted;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid $border;
+}
+
+.trade-sides {
+  display: flex;
+  align-items: stretch;
+}
+
+.trade-side {
+  flex: 1;
+  padding: 20px;
+  min-width: 0;
+}
+
+.trade-swap-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  font-size: 20px;
+  color: $text-muted;
+  border-left: 1px solid $border;
+  border-right: 1px solid $border;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.trade-team {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+.team-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: $text;
+}
+
+.trade-receives {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.receives-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $text-muted;
+}
+
+.asset-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.asset-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid $border;
+  border-radius: 8px;
+  font-size: 13px;
+  color: $text;
+
+  &--pick {
+    background: rgba(0, 201, 177, 0.08);
+    border-color: rgba(0, 201, 177, 0.2);
+    color: $teal;
+    font-size: 12px;
+  }
+}
+
+.no-assets {
+  font-size: 13px;
+  color: $text-muted;
+  font-style: italic;
+}
+
+// ── Position badge ────────────────────────────────────────────────────────────
+.pos-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+
+  &.pos--qb  { background: rgba(248, 113, 113, 0.25); color: #f87171; }
+  &.pos--rb  { background: rgba(52, 211, 153, 0.25);  color: #34d399; }
+  &.pos--wr  { background: rgba(79, 158, 255, 0.25);  color: #4f9eff; }
+  &.pos--te  { background: rgba(245, 158, 11, 0.25);  color: #f59e0b; }
+  &.pos--k   { background: rgba(167, 139, 250, 0.25); color: #a78bfa; }
+  &.pos--def { background: rgba(107, 135, 168, 0.2);  color: #6b87a8; }
+}
+
+// ── Mobile ────────────────────────────────────────────────────────────────────
+@media (max-width: 640px) {
+  .trades-page {
+    padding: 32px 16px 60px;
+  }
+
+  .trade-sides {
+    flex-direction: column;
+  }
+
+  .trade-swap-icon {
+    border-left: none;
+    border-right: none;
+    border-top: 1px solid $border;
+    border-bottom: 1px solid $border;
+    padding: 10px 20px;
+    justify-content: flex-start;
+  }
+}

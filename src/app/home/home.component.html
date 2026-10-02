@@ -1,0 +1,43 @@
+<div class="page">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero__content">
+      <p class="hero__eyebrow">
+        {{ state.season }} Season &middot; Week {{ state.currentWeek }}
+      </p>
+      <h1 class="hero__title">
+        {{ (state.league$ | async)?.name || 'Fantasy Hub' }}
+      </h1>
+      <p class="hero__subtitle">
+        Your fantasy football hub &mdash; standings, matchups, analytics, and more in one place.
+      </p>
+      <div class="hero__actions">
+        <a routerLink="/standings" class="btn btn--primary">View Standings</a>
+        <a routerLink="/matchups" class="btn btn--ghost">This Week's Matchups</a>
+      </div>
+    </div>
+    <div class="hero__glow"></div>
+  </section>
+
+  <!-- Hub Cards -->
+  <section class="hub">
+    <h2 class="hub__heading">Quick Access</h2>
+    <div class="hub__grid">
+      @for (card of hubCards; track card.route) {
+        <a class="card" [routerLink]="card.route" [style.--accent]="card.accent">
+          <div class="card__icon">{{ card.icon }}</div>
+          <h3 class="card__title">{{ card.title }}</h3>
+          <p class="card__desc">{{ card.description }}</p>
+          <span class="card__arrow">→</span>
+        </a>
+      }
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>{{ (state.league$ | async)?.name || 'Fantasy Hub' }} &middot; {{ state.season }} &middot; Built with Angular</p>
+  </footer>
+
+</div>

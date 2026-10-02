@@ -1,0 +1,55 @@
+<nav class="nav">
+
+  <div class="nav__brand-wrap">
+    <a class="nav__brand" routerLink="/">
+      <span class="nav__logo">🏈</span>
+      <span class="nav__name">{{ (state.league$ | async)?.name || 'Fantasy Hub' }}</span>
+    </a>
+
+    @if (((state.allLeagues$ | async)?.length ?? 0) > 1) {
+      <button class="nav__chevron"
+              (click)="pickerOpen.set(!pickerOpen())"
+              [class.nav__chevron--open]="pickerOpen()"
+              title="Switch league">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+          <path d="M6 8.5L1.5 4h9L6 8.5z"/>
+        </svg>
+      </button>
+
+      @if (pickerOpen()) {
+        <div class="nav__backdrop" (click)="pickerOpen.set(false)"></div>
+        <div class="nav__dropdown">
+          @for (league of (state.allLeagues$ | async) ?? []; track league.league_id) {
+            <button class="nav__dropdown-item"
+                    [class.nav__dropdown-item--active]="(state.league$ | async)?.league_id === league.league_id"
+                    (click)="selectLeague(league.league_id)">
+              {{ league.name }}
+              <span class="nav__dropdown-season">{{ league.season }}</span>
+            </button>
+          }
+        </div>
+      }
+    }
+  </div>
+
+  <div class="nav__links">
+    <a routerLink="/"
+       routerLinkActive="nav__link--active"
+       [routerLinkActiveOptions]="{ exact: true }"
+       class="nav__link">Home</a>
+    <a routerLink="/standings"
+       routerLinkActive="nav__link--active"
+       class="nav__link">Standings</a>
+    <a routerLink="/matchups"
+       routerLinkActive="nav__link--active"
+       class="nav__link">Matchups</a>
+    <a routerLink="/analytics"
+       routerLinkActive="nav__link--active"
+       class="nav__link">Analytics</a>
+    <a routerLink="/trades"
+       routerLinkActive="nav__link--active"
+       class="nav__link">Trades</a>
+    <span class="nav__link nav__link--cta">Wk {{ state.currentWeek }}</span>
+  </div>
+
+</nav>
